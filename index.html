@@ -1,0 +1,896 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F3F5FA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F1320" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="자막 없이">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<title>자막 없이 일본어</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=Zen+Maru+Gothic:wght@500;700&display=swap">
+<style>
+/* Layout: one narrow phone column, sticky header, fixed bottom tab bar; notebook cards with a highlighter under the kana. */
+:root{
+  --bg:#F3F5FA; --surface:#FFFFFF; --ink:#18203A; --muted:#5A6482; --line:#DCE1EC;
+  --accent:#2F55D4; --accent-ink:#FFFFFF; --accent-soft:#E4EAFC;
+  --mark:#FFE070; --good:#16895C; --good-soft:#DDF3E9; --bad:#C93A50; --bad-soft:#FBE3E7;
+  --f-jp:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif;
+  --f-ko:"IBM Plex Sans KR","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1320; --surface:#171C2C; --ink:#E8ECF6; --muted:#98A2C0; --line:#283049;
+    --accent:#8CA5FF; --accent-ink:#0F1320; --accent-soft:#222B4A;
+    --mark:#6E5A16; --good:#4FC797; --good-soft:#163428; --bad:#F27D8F; --bad-soft:#3A1A22;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1320; --surface:#171C2C; --ink:#E8ECF6; --muted:#98A2C0; --line:#283049;
+  --accent:#8CA5FF; --accent-ink:#0F1320; --accent-soft:#222B4A;
+  --mark:#6E5A16; --good:#4FC797; --good-soft:#163428; --bad:#F27D8F; --bad-soft:#3A1A22;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-ko);font-size:15px;line-height:1.6;-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+[lang="ja"]{font-family:var(--f-jp)}
+h1,h2,h3{margin:0;text-wrap:balance}
+p{margin:0}
+
+.wrap{max-width:600px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:12px}
+.brand{display:flex;flex-direction:column;line-height:1.25;min-width:0}
+.brand b{font-size:17px;font-weight:600;letter-spacing:-.01em}
+.brand small{font-size:12px;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--muted);white-space:nowrap}
+.pill.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.pill svg{width:16px;height:16px}
+
+main.wrap{padding-block:16px 110px;display:flex;flex-direction:column;gap:20px}
+
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding-bottom:max(6px,env(safe-area-inset-bottom,0px))}
+.tabs .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
+.tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 4px;font-size:11px;color:var(--muted)}
+.tab svg{width:22px;height:22px}
+.tab.on{color:var(--accent);font-weight:600}
+
+.sec-title{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.sec-title h2{font-size:16px;font-weight:600}
+.sec-title span{font-size:12px;color:var(--muted)}
+.eyebrow{font-size:11px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+
+/* progress */
+.progress{display:flex;flex-direction:column;gap:10px;padding:18px;border-radius:var(--r);background:var(--accent);color:var(--accent-ink)}
+.progress .big{display:flex;align-items:baseline;gap:6px;font-variant-numeric:tabular-nums}
+.progress .big b{font-size:34px;font-weight:600;line-height:1}
+.progress .big span{opacity:.8}
+.bar{height:8px;border-radius:99px;background:color-mix(in srgb,var(--accent-ink) 25%,transparent);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent-ink);border-radius:99px}
+.progress p{font-size:13px;opacity:.9}
+
+/* today list */
+.today{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);overflow:hidden}
+.today-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:12px 14px;border-top:1px solid var(--line);text-align:left;width:100%}
+.today-row:first-child{border-top:0}
+.today-row .t-main{display:flex;flex-direction:column;text-align:left;min-width:0}
+.today-row .t-jp{font-size:19px;font-weight:700}
+.today-row .t-sub{font-size:13px;color:var(--muted)}
+.today-row .spk{color:var(--accent)}
+.today-row > div{min-width:0}
+
+.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.lv{display:flex;flex-direction:column;gap:2px;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);min-width:0}
+.lv b{font-size:13.5px;font-weight:600;line-height:1.3}
+.lv-n{font-size:11px;color:var(--muted);letter-spacing:.04em}
+.lv-c{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lv.on{border-color:var(--accent);background:var(--accent-soft)}
+.lv.on .lv-n,.lv.on b{color:var(--accent)}
+.on-accent{align-self:flex-start;margin-top:2px;padding:8px 12px;border-radius:10px;background:var(--accent-ink);color:var(--accent);font-weight:600;font-size:13px}
+.link-btn{align-self:center;padding:8px 12px;font-size:13px;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+/* category grid */
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.cat-tile{display:flex;flex-direction:column;gap:6px;text-align:left;padding:14px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.cat-tile b{font-size:14px;font-weight:600}
+.cat-tile small{font-size:12px;color:var(--muted);line-height:1.45}
+.cat-tile .mini{height:4px;border-radius:9px;background:var(--line);overflow:hidden;margin-top:auto}
+.cat-tile .mini i{display:block;height:100%;background:var(--good)}
+.cat-tile .cnt{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+.tips{display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:var(--r);border:1px dashed var(--line)}
+.tips li{font-size:13.5px;color:var(--muted)}
+.tips ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.tips b{color:var(--ink);font-weight:600}
+
+/* chips */
+.chips{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;min-width:0;padding-bottom:4px;margin-inline:-4px;padding-inline:4px;scrollbar-width:none;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;overscroll-behavior-x:contain;cursor:grab}
+.chips::-webkit-scrollbar{display:none}
+.chips.dragging{cursor:grabbing;user-select:none}
+.chips.dragging .chip{pointer-events:none}
+/* 마우스 환경에서는 얇은 스크롤바를 보여 줘서 옆으로 더 있다는 걸 알림 */
+@media (hover:hover) and (pointer:fine){
+  .chips{scrollbar-width:thin;scrollbar-color:var(--line) transparent;padding-bottom:8px}
+  .chips::-webkit-scrollbar{display:block;height:6px}
+  .chips::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px}
+}
+.chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:13px;white-space:nowrap}
+.chip .n{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip.on .n{color:inherit;opacity:.7}
+
+.toolbar{display:flex;gap:8px;align-items:center}
+.search{flex:1;min-width:0;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:14px}
+.search::placeholder{color:var(--muted)}
+
+/* cards */
+.list{display:flex;flex-direction:column;gap:12px}
+.card{display:flex;flex-direction:column;gap:8px;padding:16px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.card.done{border-color:color-mix(in srgb,var(--good) 45%,var(--line))}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.tag{font-size:11px;color:var(--muted);letter-spacing:.04em}
+.tools{display:flex;gap:4px}
+.icon-btn{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;color:var(--muted)}
+.icon-btn svg{width:19px;height:19px}
+.icon-btn.on{color:var(--accent);background:var(--accent-soft)}
+.icon-btn.learn.on{color:var(--good);background:var(--good-soft)}
+.icon-btn.on .star{fill:currentColor}
+.jp{display:inline-flex;align-items:center;gap:10px;text-align:left;font-size:26px;font-weight:700;line-height:1.3;align-self:flex-start}
+.jp svg{width:20px;height:20px;color:var(--accent);flex:0 0 auto}
+.read{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:14px;color:var(--muted)}
+.read .kana{color:var(--ink);background:linear-gradient(transparent 60%,var(--mark) 60%);padding-inline:2px}
+.mean{font-size:16px;font-weight:600}
+.note{font-size:13.5px;color:var(--muted)}
+.ex{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;background:var(--bg)}
+.ex-jp{display:flex;gap:8px;align-items:flex-start;text-align:left;font-size:15px;font-weight:500}
+.ex-jp svg{width:16px;height:16px;margin-top:4px;color:var(--accent);flex:0 0 auto}
+.ex-ko{font-size:13px;color:var(--muted);padding-left:24px}
+.hideable{display:flex;flex-direction:column;gap:8px;transition:filter .2s}
+.hide-mean .card:not(.reveal) .hideable{filter:blur(7px);cursor:pointer;user-select:none}
+.empty{padding:28px 16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:var(--r);display:flex;flex-direction:column;gap:12px;align-items:center}
+
+/* flashcard */
+.deck-meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.flash{min-height:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:28px 20px;border:1px solid var(--line);border-radius:20px;background:var(--surface);cursor:pointer}
+.flash .jp{font-size:40px;align-self:center}
+.flash .read{justify-content:center;font-size:15px}
+.flash .hint{font-size:13px;color:var(--muted)}
+.flash .mean{font-size:19px}
+.flash .ex{text-align:left;width:100%}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{padding:14px;border-radius:14px;font-weight:600;font-size:15px;border:1px solid var(--line);background:var(--surface);text-align:center}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.good{background:var(--good);color:var(--surface);border-color:var(--good)}
+.btn.small{padding:10px 16px;font-size:14px}
+
+/* quiz */
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.seg button{padding:10px 6px;border-radius:10px;font-size:13px;color:var(--muted)}
+.seg button.on{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.q-card{display:flex;flex-direction:column;align-items:center;gap:10px;padding:26px 18px;border-radius:20px;border:1px solid var(--line);background:var(--surface);text-align:center}
+.q-card .jp{font-size:34px;align-self:center}
+.q-card .q-ko{font-size:22px;font-weight:600}
+.listen-btn{width:86px;height:86px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink)}
+.listen-btn svg{width:38px;height:38px}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{text-align:left;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:var(--surface);font-size:15px}
+.opt.jp-opt{font-family:var(--f-jp);font-size:18px;font-weight:700}
+.opt.right{border-color:var(--good);background:var(--good-soft);color:var(--good);font-weight:600}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.opt:disabled{cursor:default}
+.feedback{display:flex;flex-direction:column;gap:6px;padding:14px 16px;border-radius:14px;background:var(--bg);border:1px solid var(--line)}
+.feedback .fb-jp{font-family:var(--f-jp);font-size:20px;font-weight:700}
+.score{font-size:48px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1}
+.muted{color:var(--muted);font-size:13px}
+
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:13px;z-index:20;max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+<style>
+/* 기본 리셋: 노치·홈 바 영역 피하기 */
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>자막 없이 일본어</b><small id="levelLabel">영상 속 생활 일본어 노트</small></div>
+    <button class="pill" id="slowBtn" data-slow aria-pressed="false"></button>
+  </div>
+</header>
+<main class="wrap" id="view"></main>
+<nav class="tabs" aria-label="메뉴">
+  <div class="wrap" id="tabs"></div>
+</nav>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const I = {
+  speaker:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
+  star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path class="star" d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
+  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/></svg>',
+  book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v15H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h14"/></svg>',
+  cards:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="13" height="14" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v12"/></svg>',
+  quiz:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7"/><path d="M12 17h.01"/></svg>'
+};
+
+const LEVELS = [
+  {n:1, name:'기초', desc:'짧은 리액션, 인사, 기분 표현'},
+  {n:2, name:'일상 회화', desc:'멤버끼리 반말, 게임, 팬 멘트, 말끝'},
+  {n:3, name:'실전 듣기', desc:'축약, 요즘 말, 사투리, 존댓말, 긴 문장'}
+];
+const CATS = [
+  {id:'react', lv:1, name:'리액션·맞장구', desc:'영상에서 제일 많이 들리는 짧은 반응'},
+  {id:'greet', lv:1, name:'인사·기본', desc:'촬영 현장에서 꼭 쓰는 인사'},
+  {id:'feel', lv:1, name:'감정·상태', desc:'졸려, 배고파, 긴장돼'},
+  {id:'food', lv:1, name:'먹방·음식', desc:'맛 표현과 식사 자리 말'},
+  {id:'talk', lv:2, name:'멤버끼리 대화', desc:'숙소·대기실 브이로그 속 반말'},
+  {id:'game', lv:2, name:'게임·예능', desc:'자컨 게임, 벌칙, 정답 발표'},
+  {id:'fan', lv:2, name:'팬과 소통', desc:'라이브 방송·팬미팅 멘트'},
+  {id:'ending', lv:2, name:'말끝 표현', desc:'ね・よ・かな, 문장 끝 뉘앙스'},
+  {id:'casual', lv:3, name:'구어 축약', desc:'교과서와 다르게 들리는 진짜 말투'},
+  {id:'slang', lv:3, name:'요즘 말·덕질', desc:'推し, 尊い, ガチ 같은 유행어'},
+  {id:'kansai', lv:3, name:'간사이 사투리', desc:'오사카·교토 쪽 말투'},
+  {id:'keigo', lv:3, name:'스태프와 존댓말', desc:'촬영장에서 쓰는 정중한 말'},
+  {id:'long', lv:3, name:'긴 문장 듣기', desc:'여러 표현이 이어지는 실제 속도 문장'}
+];
+
+// [일본어, 읽기(가나), 한글 발음, 뜻, 메모, 예문, 예문 해석]
+const RAW = {
+react:[
+ ['すごい','','스고이','대단해, 엄청나','감탄의 기본. 남자들끼리는 すげー(스게-)로 많이 들려요.','え、すごい!上手!','와, 대박! 잘한다!'],
+ ['やばい','','야바이','대박, 미쳤다 (좋든 나쁘든)','맛있어도, 큰일 나도 やばい. 억양과 상황으로 구분해요.','これ、やばい。めっちゃおいしい。','이거 미쳤다. 완전 맛있어.'],
+ ['まじで?','','마지데?','진짜? 레알?','반말 리액션. 줄여서 まじ?','まじで?知らなかった。','진짜? 몰랐어.'],
+ ['うそ!','','우소!','헐! 말도 안 돼!','원래 뜻은 거짓말. 놀랐을 때 "헐"처럼 써요.','うそ!もう終わり?','헐! 벌써 끝이야?'],
+ ['ほんとに?','','혼토니?','정말로?','本当(ほんとう)이 말할 땐 ほんと로 줄어요.','ほんとに?信じられない。','정말? 믿을 수 없어.'],
+ ['なるほど','','나루호도','아하, 그렇구나','설명을 듣고 이해했을 때.','なるほど、そういうことか。','아하, 그런 거구나.'],
+ ['確かに','たしかに','타시카니','그러네, 확실히','상대 말에 동의할 때 자주 나와요.','確かに、それはある。','그러네, 그건 맞아.'],
+ ['それな','','소레나','그니까, 인정','젊은 층 반말. 강한 공감.','―今日暑くない?―それな。','―오늘 덥지 않아? ―그니까.'],
+ ['そうそう','','소-소-','맞아 맞아','맞장구. 길게 늘이면 더 격하게 공감.','そうそう、それ言いたかった。','맞아 맞아, 그 말 하고 싶었어.'],
+ ['だよね','','다요네','그치? 그렇지','공감. 정중하게는 ですよね.','だよね、俺もそう思う。','그치, 나도 그렇게 생각해.'],
+ ['いいね','','이-네','좋다, 좋네','제안에 찬성할 때.','いいね、行こう!','좋다, 가자!'],
+ ['最高','さいこう','사이코-','최고','最高!처럼 감탄사로도 씀.','今日のライブ、最高だった!','오늘 라이브 최고였어!'],
+ ['ウケる','うける','우케루','웃기다, 빵 터진다','반말 슬랭. 웃음 포인트에서.','その顔ウケる。','그 표정 웃겨.'],
+ ['かわいい','','카와이-','귀여워','사람, 물건, 표정 모두에.','このぬいぐるみ、かわいい!','이 인형 귀여워!'],
+ ['かっこいい','','칵코이-','멋있어','줄여서 かっけー(칵케-).','今のダンス、かっこいい!','방금 춤 멋있다!'],
+ ['え、待って','え、まって','에, 맛테','헐 잠깐만','놀라거나 뭔가 알아챘을 때 문장 맨 앞에 자주.','え、待って、それ俺の!','헐 잠깐, 그거 내 거야!'],
+ ['ええ〜','','에--','에이~, 에엥?','불만·놀람·아쉬움. 길게 끌어요.','ええ〜、もう一回やりたい。','에이~ 한 번 더 하고 싶어.'],
+ ['びっくりした','','빅쿠리시타','깜짝 놀랐어','몰래카메라·공포 콘텐츠 단골.','びっくりした!急に来ないで。','깜짝이야! 갑자기 오지 마.']
+],
+casual:[
+ ['すげー','すごい → すげー','스게-','대박 (すごい의 남자 말투)','"아이"가 "에-"로 바뀌어요. うまい→うめー, やばい→やべー도 같은 원리.','すげー、何これ!','대박, 이게 뭐야!'],
+ ['やっぱ','やっぱり → やっぱ','얍파','역시','원래: やっぱり.','やっぱこれが一番!','역시 이게 최고!'],
+ ['〜てる','〜ている → 〜てる','~테루','~하고 있어','い가 빠져요. 知ってる(싯테루) = 알고 있어.','何してる?','뭐 해?'],
+ ['〜ちゃう','〜てしまう → 〜ちゃう','~챠우','~해 버리다','과거형은 〜ちゃった. 食べちゃった = 먹어 버렸다.','全部食べちゃった。','다 먹어 버렸어.'],
+ ['〜じゃない','〜ではない → 〜じゃない','~쟈나이','~가 아니야 / ~잖아?','끝을 올리면 "~잖아?" 느낌.','それ、俺のじゃない?','그거 내 거 아니야?'],
+ ['〜じゃん','','~쟌','~잖아','じゃない보다 더 짧은 구어. 칭찬할 때 자주.','いいじゃん!','좋잖아!'],
+ ['〜なきゃ','〜なければ → 〜なきゃ','~나캬','~해야 해','원래: 〜なければならない.','もう行かなきゃ。','이제 가야 해.'],
+ ['ほんと','本当 → ほんと','혼토','진짜','원래: ほんとう. ほんと?(진짜?)로도.','ほんとありがとう。','진짜 고마워.'],
+ ['なんか','何か → なんか','난카','뭔가, 왠지','말 시작할 때 습관어처럼도 많이 들려요.','なんか、眠くなってきた。','뭔가 졸려지기 시작했어.'],
+ ['めっちゃ','','멧챠','완전, 엄청','원래 간사이 사투리, 지금은 전국에서 씀.','めっちゃ好き。','완전 좋아.'],
+ ['〜って','','~떼','~래, ~라는 건','남의 말 전할 때(と言う), 주제(は) 대신.','明日休みだって!','내일 쉰대!'],
+ ['〜んだ','〜のだ → 〜んだ','~ㄴ다','~거든, ~인 거야','설명·강조. 질문은 〜の?로 부드럽게.','今日、誕生日なんだ。','오늘 생일이거든.'],
+ ['ちょ、待って','ちょっと待って → ちょ待って','쵸, 맛테','잠깐만','ちょっと가 ちょ로 짧아져요.','ちょ待って、まだ準備してない!','잠깐만, 아직 준비 안 했어!'],
+ ['〜とく','〜ておく → 〜とく','~토쿠','미리 ~해 둘게','원래: 〜ておく.','写真撮っとくね。','사진 찍어 둘게.'],
+ ['分かんない','分からない → 分かんない','와칸나이','모르겠어','ら행이 ん으로 바뀌는 패턴. つまんない(재미없어)도 같아요.','全然分かんない。','하나도 모르겠어.']
+],
+ending:[
+ ['〜ね','','~네','~네, ~지?','상대에게 공감이나 확인을 구할 때.','今日、楽しかったね。','오늘 재밌었지.'],
+ ['〜よ','','~요','~야 (알려줄 때)','한국어 "요"와 달리 존댓말이 아니에요! 상대가 모르는 걸 알려줄 때.','これ、おいしいよ。','이거 맛있어.'],
+ ['〜よね','','~요네','~지? 그렇지?','ね보다 확인하는 느낌.','明日、休みだよね?','내일 쉬는 날이지?'],
+ ['〜かな','','~카나','~일까?','혼잣말 같은 궁금함.','どっちがいいかな。','어느 게 좋을까.'],
+ ['〜でしょ','','~데쇼','~지? ~잖아','확신하면서 동의를 구할 때.','言ったでしょ!','내가 말했잖아!'],
+ ['〜っけ','','~케','~였더라?','기억이 안 날 때.','あれ、何だっけ?','어, 그거 뭐였더라?'],
+ ['〜たい','','~타이','~하고 싶어','동사 + たい. 行きたい, 食べたい.','日本に行きたい。','일본 가고 싶어.'],
+ ['〜てもいい?','','~테모 이-?','~해도 돼?','허락 구하기.','これ、食べてもいい?','이거 먹어도 돼?'],
+ ['〜よう','','~요-','~하자','권유형. 行こう, 食べよう, 撮ろう.','一緒に写真撮ろう!','같이 사진 찍자!'],
+ ['〜けど','','~케도','~인데, ~지만','말끝을 흐릴 때도 써요.','行きたいけど、時間ない。','가고 싶은데 시간이 없어.']
+],
+talk:[
+ ['何してるの?','なにしてるの?','나니 시테루노?','뭐 하고 있어?','','ねえ、何してるの?','야, 뭐 하고 있어?'],
+ ['見て見て','みてみて','미테미테','봐봐','','見て見て、これ!','봐봐, 이거!'],
+ ['ちょっと','','춋토','잠깐, 좀 / 야!','말리거나 따질 때 "ちょっと!"는 "야!"에 가까워요.','ちょっと、やめてよ!','야, 하지 마!'],
+ ['早く','はやく','하야쿠','빨리','','早く早く、始まるよ!','빨리 빨리, 시작한다!'],
+ ['分かった','わかった','와캇타','알았어','정중: 分かりました.','うん、分かった。','응, 알았어.'],
+ ['知らない','しらない','시라나이','몰라','구어로 知らん(시란)도.','え、知らない。','어, 몰라.'],
+ ['なんで?','','난데?','왜?','','なんで笑ってるの?','왜 웃어?'],
+ ['うるさい','','우루사이','시끄러워','친한 사이 장난으로 많이 써요.','うるさい〜!静かにして。','시끄러워~! 조용히 해.'],
+ ['似てる','にてる','니테루','닮았어','','二人、似てない?','둘이 닮지 않았어?'],
+ ['天才','てんさい','텐사이','천재','멤버 칭찬할 때 자주.','え、天才じゃん!','헐, 천재잖아!'],
+ ['一緒に','いっしょに','잇쇼니','같이','','一緒にやろう!','같이 하자!'],
+ ['本当にごめん','ほんとうにごめん','혼토-니 고멘','진짜 미안해','','本当にごめん、忘れてた。','진짜 미안해, 까먹었어.'],
+ ['待って','まって','맛테','기다려, 잠깐','정중: 待ってください.','待って、置いてかないで!','기다려, 두고 가지 마!'],
+ ['なに?','','나니?','뭐?','되물을 땐 なんて?(뭐라고?)도.','え、なに?もう一回言って。','어, 뭐? 다시 말해 줘.'],
+ ['どうしよう','','도-시요-','어떡하지','당황했을 때.','どうしよう、間違えた。','어떡하지, 틀렸어.']
+],
+game:[
+ ['じゃんけんぽん','','쟝켄퐁','가위바위보','비기면 あいこでしょ(아이코데쇼).','最初はグー、じゃんけんぽん!','처음엔 주먹, 가위바위보!'],
+ ['せーの','','세-노','하나 둘 셋 (구령)','동시에 뭔가 할 때.','せーので言おう。せーの!','하나 둘 셋 하면 말하자. 하나 둘 셋!'],
+ ['勝った / 負けた','かった / まけた','캇타 / 마케타','이겼다 / 졌다','','よっしゃ、勝った!','아싸, 이겼다!'],
+ ['ずるい','','즈루이','치사해, 반칙이야','부러울 때 "좋겠다~"의 뜻도 있어요.','今のずるい!もう一回!','방금 반칙이야! 한 번 더!'],
+ ['もう一回','もういっかい','모- 익카이','한 번 더','','お願い、もう一回だけ!','제발, 한 번만 더!'],
+ ['正解 / 不正解','せいかい / ふせいかい','세-카이 / 후세-카이','정답 / 오답','','正解は…これです!','정답은… 이겁니다!'],
+ ['惜しい','おしい','오시-','아깝다','정답에 가까웠을 때.','惜しい!ちょっと違う。','아깝다! 살짝 달라.'],
+ ['罰ゲーム','ばつゲーム','바츠 게-무','벌칙','','負けた人は罰ゲームね。','진 사람은 벌칙이야.'],
+ ['頑張って','がんばって','감밧테','힘내, 파이팅','頑張ります = 열심히 할게요.','頑張って!できるよ!','힘내! 할 수 있어!'],
+ ['次、誰?','つぎ、だれ?','츠기, 다레?','다음 누구야?','','次、誰の番?','다음 누구 차례야?'],
+ ['いくよ','','이쿠요','간다 / 시작한다','시작 신호.','じゃあ、いくよ!3、2、1!','그럼 간다! 3, 2, 1!'],
+ ['無理','むり','무리','못 해, 불가능','無理無理(무리무리)처럼 겹쳐 말하는 경우가 많아요.','え、これ無理じゃない?','헐, 이거 무리 아니야?'],
+ ['簡単','かんたん','칸탄','쉬워, 간단해','','思ったより簡単だった。','생각보다 쉬웠어.']
+],
+food:[
+ ['おいしい','','오이시-','맛있어','남자들끼리는 うまい(우마이)도 많이 써요.','これ、めっちゃおいしい!','이거 완전 맛있어!'],
+ ['うまっ','','우맛','맛있다! (감탄)','うまい의 짧은 감탄형. 끝을 끊어 말해요.','うまっ!何これ?','맛있다! 이거 뭐야?'],
+ ['おいしそう','','오이시소-','맛있겠다','〜そう = ~해 보인다.','わあ、おいしそう!','와, 맛있겠다!'],
+ ['辛い','からい','카라이','매워','같은 한자를 つらい(괴롭다)로도 읽어요.','辛っ!水ちょうだい!','매워! 물 줘!'],
+ ['甘い','あまい','아마이','달아','','これ、思ったより甘い。','이거 생각보다 달아.'],
+ ['熱っ','あつっ','아츳','앗 뜨거','熱い(뜨겁다)의 감탄형.','熱っ!気をつけて。','앗 뜨거! 조심해.'],
+ ['一口ちょうだい','ひとくちちょうだい','히토쿠치 쵸-다이','한 입만 줘','ちょうだい = 줘 (친근한 반말).','それ、一口ちょうだい。','그거 한 입만 줘.'],
+ ['何食べる?','なにたべる?','나니 타베루?','뭐 먹을래?','','夜ご飯、何食べる?','저녁 뭐 먹을래?'],
+ ['お腹いっぱい','おなかいっぱい','오나카 입파이','배불러','','もうお腹いっぱい。','이제 배불러.'],
+ ['食べてみて','たべてみて','타베테 미테','먹어 봐','〜てみて = ~해 봐.','これ食べてみて、やばいよ。','이거 먹어 봐, 대박이야.'],
+ ['おかわり','','오카와리','한 그릇 더','','ご飯、おかわりください!','밥 한 그릇 더 주세요!'],
+ ['好き嫌い','すききらい','스키키라이','가리는 음식, 호불호','好き嫌いある? = 못 먹는 거 있어?','好き嫌いある?','못 먹는 거 있어?']
+],
+feel:[
+ ['眠い','ねむい','네무이','졸려','','朝早すぎて眠い。','아침이 너무 일러서 졸려.'],
+ ['お腹すいた','おなかすいた','오나카 스이타','배고파','먹방 오프닝 단골.','お腹すいた〜。何か食べたい。','배고파~ 뭐 먹고 싶어.'],
+ ['疲れた','つかれた','츠카레타','피곤해, 지쳤다','','今日は練習多くて疲れた。','오늘 연습 많아서 지쳤어.'],
+ ['楽しい','たのしい','타노시-','즐거워, 재밌어','과거형 楽しかった(타노시캇타).','めっちゃ楽しかった!','완전 재밌었어!'],
+ ['嬉しい','うれしい','우레시-','기뻐','','そう言ってくれて嬉しい。','그렇게 말해줘서 기뻐.'],
+ ['恥ずかしい','はずかしい','하즈카시-','부끄러워, 창피해','','やめて、恥ずかしい!','하지 마, 부끄러워!'],
+ ['緊張する','きんちょうする','킨쵸-스루','긴장돼','','初めてのステージ、緊張する。','첫 무대라 긴장돼.'],
+ ['寂しい','さみしい','사미시-','쓸쓸해, 허전해','팬을 못 봐서 아쉽다는 뜻으로도 써요.','みんなに会えなくて寂しい。','다들 못 봐서 쓸쓸해.'],
+ ['暑い / 寒い','あつい / さむい','아츠이 / 사무이','더워 / 추워','','今日、めっちゃ寒くない?','오늘 엄청 춥지 않아?'],
+ ['怖い','こわい','코와이','무서워','공포 게임·놀이기구 콘텐츠 단골.','無理無理、怖い!','안 돼 안 돼, 무서워!'],
+ ['悔しい','くやしい','쿠야시-','분해, 억울해','게임에서 졌을 때.','うわ、悔しい!あと少しだったのに。','아 분해! 조금만 더 하면 됐는데.'],
+ ['ドキドキする','','도키도키스루','두근두근해','','結果発表、ドキドキする。','결과 발표, 두근두근해.'],
+ ['大丈夫','だいじょうぶ','다이죠-부','괜찮아','"괜찮아요(사양할게요)"라는 거절로도 써요.','―大丈夫?―うん、大丈夫。','―괜찮아? ―응, 괜찮아.'],
+ ['幸せ','しあわせ','시아와세','행복해','','今、すごく幸せ。','지금 너무 행복해.']
+],
+greet:[
+ ['おはようございます','','오하요- 고자이마스','안녕하세요 (아침/첫 만남)','방송·연예계에선 그날 처음 만나면 저녁에도 이렇게 인사해요.','おはようございます!今日もよろしくお願いします。','안녕하세요! 오늘도 잘 부탁드립니다.'],
+ ['お疲れさまです','おつかれさまです','오츠카레사마데스','수고하셨습니다','촬영·연습 끝날 때 필수. 반말은 お疲れ(오츠카레).','今日もお疲れさまでした!','오늘도 수고하셨습니다!'],
+ ['よろしくお願いします','よろしくおねがいします','요로시쿠 오네가이시마스','잘 부탁드립니다','자기소개, 촬영 시작 인사.','今日はよろしくお願いします。','오늘 잘 부탁드립니다.'],
+ ['ありがとう','','아리가토-','고마워','정중하게는 ありがとうございます.','手伝ってくれてありがとう。','도와줘서 고마워.'],
+ ['ごめん','','고멘','미안','정중: すみません. 가볍게 ごめんね.','ごめん、遅れた!','미안, 늦었어!'],
+ ['すみません','','스미마셍','죄송합니다 / 저기요','사과, 사람 부를 때, 가벼운 감사까지.','すみません、これください。','저기요, 이거 주세요.'],
+ ['いただきます','','이타다키마스','잘 먹겠습니다','먹방 시작 전 꼭 나와요.','じゃあ、いただきます!','그럼, 잘 먹겠습니다!'],
+ ['ごちそうさまでした','','고치소-사마데시타','잘 먹었습니다','','おいしかった。ごちそうさまでした。','맛있었어요. 잘 먹었습니다.'],
+ ['ただいま / おかえり','','타다이마 / 오카에리','다녀왔어 / 어서 와','숙소 브이로그 단골.','―ただいま!―おかえり〜。','―다녀왔어! ―어서 와~'],
+ ['おやすみ','','오야스미','잘 자','라이브 마무리 멘트로 자주.','今日はもう寝るね。おやすみ!','오늘은 이만 잘게. 잘 자!'],
+ ['久しぶり','ひさしぶり','히사시부리','오랜만이야','정중: お久しぶりです.','みんな、久しぶり!','다들 오랜만이야!'],
+ ['また明日','またあした','마타 아시타','내일 봐','またね = 또 봐.','じゃあ、また明日ね。','그럼 내일 봐.'],
+ ['行ってきます','いってきます','잇테키마스','다녀올게요','대답은 行ってらっしゃい(잇테랏샤이).','仕事に行ってきます!','일하러 다녀올게!']
+],
+fan:[
+ ['みなさん','','미나상','여러분','친근하게는 みんな(민나).','みなさん、こんにちは!','여러분, 안녕하세요!'],
+ ['会いたかった','あいたかった','아이타캇타','보고 싶었어','会う(만나다) + たい(싶다) + かった(과거).','みんなに会いたかった!','다들 보고 싶었어!'],
+ ['大好き','だいすき','다이스키','너무 좋아','','みんな大好きだよ!','다들 너무 좋아!'],
+ ['愛してる','あいしてる','아이시테루','사랑해','','愛してるよ〜!','사랑해~!'],
+ ['応援してくれてありがとう','おうえんしてくれてありがとう','오-엔 시테쿠레테 아리가토-','응원해 줘서 고마워','〜てくれて = ~해 줘서.','いつも応援してくれてありがとう。','항상 응원해 줘서 고마워.'],
+ ['元気?','げんき?','겡키?','잘 지내?','대답: 元気だよ(잘 지내).','みんな元気だった?','다들 잘 지냈어?'],
+ ['聞こえる?','きこえる?','키코에루?','들려?','라이브 방송 시작할 때.','声、聞こえる?','목소리 들려?'],
+ ['ご飯食べた?','ごはんたべた?','고항 타베타?','밥 먹었어?','','みんなご飯食べた?','다들 밥 먹었어?'],
+ ['また会おうね','またあおうね','마타 아오-네','또 만나자','','絶対また会おうね!','꼭 또 만나자!'],
+ ['待っててね','まっててね','맛테테네','기다려 줘','〜てて = 〜ていて의 축약.','新曲、楽しみに待っててね。','신곡 기대하면서 기다려 줘.'],
+ ['楽しみ','たのしみ','타노시미','기대돼','楽しみにしてて = 기대해 줘.','来週のコンサート、楽しみ!','다음 주 콘서트 기대돼!'],
+ ['来てくれてありがとう','きてくれてありがとう','키테쿠레테 아리가토-','와 줘서 고마워','','今日は来てくれてありがとう!','오늘 와 줘서 고마워!'],
+ ['夢みたい','ゆめみたい','유메 미타이','꿈만 같아','〜みたい = ~같아.','ここに立てるなんて夢みたい。','여기 설 수 있다니 꿈만 같아.'],
+ ['届けたい','とどけたい','토도케타이','전하고 싶어','노래·마음을 팬에게 "전하다".','僕たちの気持ちを届けたい。','우리 마음을 전하고 싶어.']
+],
+slang:[
+ ['推し','おし','오시','최애','推しメン = 최애 멤버. 덕질의 기본 단어.','私の推しはこの人!','내 최애는 이 사람!'],
+ ['尊い','とうとい','토-토이','너무 소중해, 존귀해','최애가 너무 좋을 때 쓰는 덕질 용어.','二人の関係、尊い…。','둘 관계 너무 소중해….'],
+ ['エモい','','에모이','감성적이야, 뭉클해','emotional에서 온 말. 사진·노래·분위기에.','この写真、エモくない?','이 사진 감성 있지 않아?'],
+ ['ガチ','','가치','진짜, 진심','ガチで = 진짜로. ガチ勢 = 진심인 사람들.','ガチで緊張した。','진짜 긴장했어.'],
+ ['神','かみ','카미','신, 레전드','神曲 = 명곡, 神回 = 레전드 회차.','今日の放送、神回だった。','오늘 방송 레전드 회차였어.'],
+ ['沼','ぬま','누마','늪 (헤어나올 수 없는 덕질)','沼にハマる = 입덕해서 못 빠져나오다.','完全に沼にハマった。','완전히 늪에 빠졌어.'],
+ ['それはそう','','소레와 소-','그건 그렇지','반박할 수 없을 때 담담하게 인정.','―眠いでしょ?―それはそう。','―졸리지? ―그건 그렇지.'],
+ ['気まずい','きまずい','키마즈이','어색해','분위기가 애매할 때.','え、なんか気まずい。','어, 뭔가 어색해.'],
+ ['テンション上がる','テンションあがる','텐숀 아가루','신난다, 텐션 오른다','반대는 テンション下がる(사가루).','新曲聞いてテンション上がった!','신곡 듣고 텐션 올랐어!'],
+ ['ノリ','','노리','분위기, 텐션, 흐름','ノリがいい = 리액션 좋고 잘 맞춰 줌.','みんなノリよすぎ!','다들 텐션 너무 좋아!'],
+ ['ぴえん','','피엔','흑흑, 울먹','우는 소리를 흉내 낸 유행어. 귀엽게 슬플 때.','もう終わり?ぴえん。','벌써 끝이야? 흑흑.']
+],
+kansai:[
+ ['なんでやねん','','난데야넨','왜 그러는데! (츳코미)','개그에서 태클 거는 대표 말. 표준어로 なんでだよ.','なんでやねん!','아니 왜 그러는데!'],
+ ['あかん','','아칸','안 돼, 글렀어','표준어: だめ.','それはあかんて。','그건 안 된다니까.'],
+ ['ほんま','','혼마','진짜','표준어: ほんと.','ほんまに?','진짜로?'],
+ ['〜へん','〜ない → 〜へん','~헨','~안 해, ~없어','부정형. 分からへん = 分からない.','全然分からへん。','하나도 모르겠어.'],
+ ['〜や','〜だ → 〜や','~야','~야, ~이다','そうや = そうだ.','そうや、言うの忘れてた。','맞다, 말하는 거 까먹었어.'],
+ ['ええやん','','에-얀','좋잖아','표준어: いいじゃん.','それ、ええやん!','그거 좋잖아!'],
+ ['せやな','','세야나','그렇지, 맞아','표준어: そうだね.','せやな、そうしよか。','맞아, 그렇게 하자.'],
+ ['しんどい','','신도이','힘들어, 지쳐','전국적으로도 많이 써요.','今日の練習、しんどかった。','오늘 연습 힘들었어.'],
+ ['おおきに','','오-키니','고마워','오래된 말투라 요즘은 장난스럽게 써요.','おおきに〜!','고마워~!']
+],
+keigo:[
+ ['失礼します','しつれいします','시츠레-시마스','실례합니다','방에 들어가거나 나갈 때. 먼저 갈 땐 お先に失礼します.','お先に失礼します。','먼저 들어가 보겠습니다.'],
+ ['了解です','りょうかいです','료-카이데스','알겠습니다','스태프 지시에 대답할 때.','はい、了解です!','네, 알겠습니다!'],
+ ['少々お待ちください','しょうしょうおまちください','쇼-쇼- 오마치쿠다사이','잠시만 기다려 주세요','','少々お待ちください。','잠시만 기다려 주세요.'],
+ ['よろしいですか','','요로시-데스카','괜찮으실까요?','いいですか의 정중한 말.','ここに座ってもよろしいですか?','여기 앉아도 괜찮을까요?'],
+ ['召し上がってください','めしあがってください','메시아갓테 쿠다사이','드세요','食べてください의 존경어.','どうぞ、召し上がってください。','어서 드세요.'],
+ ['頑張ります','がんばります','감바리마스','열심히 하겠습니다','인터뷰 마무리 단골.','これからも頑張ります!','앞으로도 열심히 하겠습니다!'],
+ ['お邪魔します','おじゃまします','오쟈마시마스','실례하겠습니다 (남의 공간에 들어갈 때)','나올 땐 お邪魔しました.','お邪魔します!','실례하겠습니다!'],
+ ['恐れ入ります','おそれいります','오소레이리마스','송구합니다, 감사합니다','아주 정중한 감사·부탁. 시상식, 인터뷰에서.','お忙しいところ恐れ入ります。','바쁘신데 감사합니다.']
+],
+long:[
+ ['え、ちょっと待って、それ本当に言ったの?','え、ちょっとまって、それほんとうにいったの?','에, 춋토 맛테, 소레 혼토-니 잇타노?','헐 잠깐만, 그거 진짜 말했어?','〜の? = 부드러운 질문.','',''],
+ ['今日マジで寝てないから、テンションおかしいかも。','きょうマジでねてないから、テンションおかしいかも。','쿄- 마지데 네테나이카라, 텐숀 오카시-카모','오늘 진짜 못 자서 텐션 이상할지도 몰라','〜かも = ~일지도.','',''],
+ ['それ食べたことある?めっちゃおいしいらしいよ。','それたべたことある?めっちゃおいしいらしいよ。','소레 타베타 코토 아루? 멧챠 오이시- 라시-요','그거 먹어 본 적 있어? 엄청 맛있대','〜たことある = ~해 본 적 있어, 〜らしい = ~래.','',''],
+ ['もうちょっとで終わるから、待っててくれる?','もうちょっとでおわるから、まっててくれる?','모- 춋토데 오와루카라, 맛테테 쿠레루?','거의 끝나니까 기다려 줄래?','〜てくれる? = ~해 줄래?','',''],
+ ['なんでいつも俺だけ負けるの?おかしくない?','なんでいつもおれだけまけるの?おかしくない?','난데 이츠모 오레다케 마케루노? 오카시쿠나이?','왜 맨날 나만 져? 이상하지 않아?','〜だけ = ~만.','',''],
+ ['次はみんなで一緒に行けたらいいな。','つぎはみんなでいっしょにいけたらいいな。','츠기와 민나데 잇쇼니 이케타라 이-나','다음엔 다 같이 갈 수 있으면 좋겠다','〜たらいいな = ~하면 좋겠다.','',''],
+ ['思ってたより全然難しくて、びっくりした。','おもってたよりぜんぜんむずかしくて、びっくりした。','오못테타요리 젠젠 무즈카시쿠테, 빅쿠리시타','생각했던 것보다 훨씬 어려워서 놀랐어','〜てた = 〜ていた의 축약.','',''],
+ ['練習しすぎて、もう足が動かない。','れんしゅうしすぎて、もうあしがうごかない。','렌슈- 시스기테, 모- 아시가 우고카나이','연습을 너무 해서 이제 다리가 안 움직여','〜すぎて = 너무 ~해서.','',''],
+ ['それ言っちゃダメって言ったじゃん!','それいっちゃダメっていったじゃん!','소레 잇챠 다멧테 잇타쟌!','그거 말하면 안 된다고 했잖아!','〜ちゃダメ = ~하면 안 돼.','',''],
+ ['みんなが応援してくれるから、頑張れるんだよ。','みんながおうえんしてくれるから、がんばれるんだよ。','민나가 오-엔시테 쿠레루카라, 감바레룬다요','다들 응원해 주니까 힘낼 수 있는 거야','〜んだよ = ~거야 (설명·강조).','','']
+]
+};
+
+const ITEMS = [];
+for (const c of CATS) for (const [j,r,k,m,n,ej,ek] of RAW[c.id]) ITEMS.push({id:c.id+'|'+j, cat:c.id, lv:c.lv, j, r, k, m, n, ej, ek});
+const byId = Object.fromEntries(ITEMS.map(i => [i.id, i]));
+const catName = id => (CATS.find(c => c.id === id) || {}).name || '';
+
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuffle = (a, rnd = Math.random) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+function mulberry(seed){ return () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+const KEY = 'jp-notebook-v1';
+let saved = {};
+try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) {}
+const S = {
+  view: saved.view || 'home',
+  cat: saved.cat || 'all',
+  q: '',
+  hide: !!saved.hide,
+  slow: !!saved.slow,
+  learned: new Set((saved.learned || []).filter(id => byId[id])),
+  fav: new Set((saved.fav || []).filter(id => byId[id])),
+  quizMode: saved.quizMode || 'jp2ko',
+  level: [1, 2, 3].includes(saved.level) ? saved.level : 1,
+  skipAsk: false,
+  deck: null,
+  quiz: null
+};
+if (CATS.some(c => c.id === S.cat && c.lv !== S.level)) S.cat = 'all';
+function setLevel(n){
+  S.level = n; S.cat = 'all'; S.deck = null; S.quiz = null; S.skipAsk = false;
+  toast(`${n}단계 · ${LEVELS[n - 1].name}`);
+}
+function persist(){
+  try { localStorage.setItem(KEY, JSON.stringify({view:S.view, cat:S.cat, hide:S.hide, slow:S.slow, learned:[...S.learned], fav:[...S.fav], quizMode:S.quizMode, level:S.level})); } catch (e) {}
+}
+
+/* 음성 */
+let jaVoice = null;
+function pickVoice(){
+  if (!('speechSynthesis' in window)) return;
+  const vs = speechSynthesis.getVoices();
+  jaVoice = vs.find(v => /^ja[-_]JP/i.test(v.lang) && /Kyoko|O-ren|Google/i.test(v.name)) || vs.find(v => /^ja/i.test(v.lang)) || null;
+}
+if ('speechSynthesis' in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+// 한자는 음성 엔진이 잘못 읽을 수 있어서, 읽기(가나)가 있으면 가나로 읽힌다
+const sayOf = it => (it.r && !it.r.includes('→')) ? it.r : it.j;
+// 예문 속 헷갈리기 쉬운 한자 읽기
+const READ_FIX = [['辛っ','からっ'],['熱っ','あつっ'],['明日','あした'],['今日','きょう'],['何だっけ','なんだっけ'],['何これ','なにこれ'],['一口','ひとくち'],['二人','ふたり'],['上手','じょうず']];
+function cleanForVoice(text){
+  let s = text;
+  for (const [a, b] of READ_FIX) s = s.split(a).join(b);
+  return s
+    .replace(/^〜/, '')                    // 패턴 표시(〜てる)의 앞 물결은 읽지 않음
+    .replace(/〜/g, 'ー')                  // 말끝 물결은 길게 늘이기
+    .replace(/―/g, '')
+    .replace(/\s*\/\s*/g, '。')            // A / B 는 끊어서
+    .replace(/っ(?=[。、]|$)/g, "っ!"); // 끝의 작은 っ가 잘리지 않게
+}
+// 음성 파일 이름: 읽을 문장의 해시 (FNV-1a)
+function voiceKey(text){
+  let h = 0x811c9dc5;
+  for (const ch of cleanForVoice(text)) { h ^= ch.codePointAt(0); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h.toString(36);
+}
+let lastSay = {text: '', at: 0};
+let player = null;
+function speak(text){
+  const now = Date.now();
+  const repeat = lastSay.text === text && now - lastSay.at < 6000;
+  lastSay = {text, at: now};
+  // 같은 걸 바로 다시 누르면 천천히
+  const rate = repeat ? 0.7 : S.slow ? 0.8 : 1;
+  if (repeat && !S.slow) toast('천천히 한 번 더');
+  if (player) { player.pause(); player.onerror = null; }
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  const p = new Audio('a/' + voiceKey(text) + '.mp3');
+  player = p;
+  p.preservesPitch = true;
+  p.playbackRate = rate;
+  let failed = false;
+  const fail = () => { if (failed || player !== p) return; failed = true; speakTTS(text, rate); };
+  p.onerror = fail;
+  const pr = p.play();
+  if (pr && pr.catch) pr.catch(err => { if (err && err.name !== 'AbortError') fail(); });
+}
+// 녹음 파일이 없을 때만 기기 음성으로
+function speakTTS(text, rate){
+  if (!('speechSynthesis' in window)) { toast('음성을 재생하지 못했어요'); return; }
+  if (!jaVoice) pickVoice();
+  if (!jaVoice) { toast('이 표현은 녹음 파일이 없고, 기기에 일본어 음성도 없어요'); return; }
+  const u = new SpeechSynthesisUtterance(cleanForVoice(text));
+  u.lang = 'ja-JP'; u.voice = jaVoice; u.rate = rate * 0.9;
+  speechSynthesis.speak(u);
+}
+
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 1800);
+}
+
+function pool(cat){
+  if (cat === 'all') return ITEMS.filter(i => i.lv === S.level);
+  if (cat === 'fav') return ITEMS.filter(i => S.fav.has(i.id));
+  return ITEMS.filter(i => i.cat === cat);
+}
+
+/* 공통 조각 */
+function chips(){
+  const list = [{id:'all', name:`${S.level}단계 전체`}, {id:'fav', name:'★ 즐겨찾기'}, ...CATS.filter(c => c.lv === S.level)];
+  return `<div class="chips">${list.map(c => `<button class="chip${S.cat === c.id ? ' on' : ''}" data-cat="${c.id}">${esc(c.name)}<span class="n">${pool(c.id).length}</span></button>`).join('')}</div>`;
+}
+function readLine(it){
+  return `<div class="read">${it.r ? `<span class="kana" lang="ja">${esc(it.r)}</span>` : ''}<span>${esc(it.k)}</span></div>`;
+}
+function exBlock(it){
+  return it.ej ? `<div class="ex"><button class="ex-jp" data-say="${esc(it.ej)}" lang="ja">${I.speaker}<span>${esc(it.ej)}</span></button><p class="ex-ko">${esc(it.ek)}</p></div>` : '';
+}
+function cardHTML(it){
+  const done = S.learned.has(it.id), fav = S.fav.has(it.id);
+  return `<article class="card${done ? ' done' : ''}">
+    <div class="card-head"><span class="tag">${esc(catName(it.cat))}</span>
+      <div class="tools">
+        <button class="icon-btn${fav ? ' on' : ''}" data-fav="${esc(it.id)}" aria-label="즐겨찾기" aria-pressed="${fav}">${I.star}</button>
+        <button class="icon-btn learn${done ? ' on' : ''}" data-learn="${esc(it.id)}" aria-label="외웠어요" aria-pressed="${done}">${I.check}</button>
+      </div>
+    </div>
+    <button class="jp" data-say="${esc(sayOf(it))}" aria-label="발음 듣기: ${esc(it.j)}"><span lang="ja">${esc(it.j)}</span>${I.speaker}</button>
+    ${readLine(it)}
+    <div class="hideable" data-reveal><p class="mean">${esc(it.m)}</p>${it.n ? `<p class="note">${esc(it.n)}</p>` : ''}${exBlock(it)}</div>
+  </article>`;
+}
+
+/* 화면: 홈 */
+function levelStats(n){
+  const p = ITEMS.filter(i => i.lv === n);
+  return {total: p.length, done: p.filter(i => S.learned.has(i.id)).length};
+}
+// 날짜별로 순서를 섞고, 아직 안 외운 것 중 앞 5개
+function todayPicks(){
+  const d = new Date();
+  const seed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate() + S.level * 7919;
+  return shuffle(ITEMS.filter(i => i.lv === S.level), mulberry(seed)).filter(i => !S.learned.has(i.id)).slice(0, 5);
+}
+function nextLevelBtn(){
+  return S.level < LEVELS.length ? `<button class="btn primary" data-level="${S.level + 1}">${S.level + 1}단계 ${esc(LEVELS[S.level].name)}로 넘어가기</button>` : '';
+}
+function viewHome(){
+  const d = new Date();
+  const L = LEVELS[S.level - 1], st = levelStats(S.level), pct = Math.round(st.done / st.total * 100);
+  const today = todayPicks();
+  const last = S.level === LEVELS.length;
+  const msg = st.done === st.total ? (last ? '마지막 단계까지 다 외웠어요! 듣기 퀴즈로 복습해 보세요.' : '이 단계는 다 외웠어요!')
+    : pct >= 80 && !last ? '거의 다 왔어요. 다음 단계로 넘어가도 좋아요.'
+    : last ? '실제 영상 속도에 가까운 표현이에요.' : '쉽게 느껴지면 언제든 다음 단계로 넘어가세요.';
+  return `
+  <section class="levels" aria-label="단계">${LEVELS.map(l => { const s = levelStats(l.n); return `
+    <button class="lv${l.n === S.level ? ' on' : ''}" data-level="${l.n}" aria-pressed="${l.n === S.level}">
+      <span class="lv-n">${l.n}단계</span><b>${esc(l.name)}</b><span class="lv-c">${s.done} / ${s.total}</span>
+    </button>`; }).join('')}
+  </section>
+
+  <section class="progress">
+    <span class="eyebrow" style="color:inherit;opacity:.8">${S.level}단계 · ${esc(L.name)}</span>
+    <div class="big"><b>${st.done}</b><span>/ ${st.total}개 · ${pct}%</span></div>
+    <div class="bar"><i style="width:${pct}%"></i></div>
+    <p>${esc(L.desc)}. ${msg}</p>
+    ${last ? '' : `<button class="on-accent" data-level="${S.level + 1}">${S.level + 1}단계 ${esc(LEVELS[S.level].name)}로 넘어가기 →</button>`}
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:10px">
+    <div class="sec-title"><h2>오늘의 표현</h2><span>${d.getMonth() + 1}월 ${d.getDate()}일 · ${S.level}단계</span></div>
+    ${today.length ? `<div class="today">${today.map(it => `
+      <div class="today-row">
+        <button class="t-main" data-say="${esc(sayOf(it))}">
+          <span class="t-jp" lang="ja">${esc(it.j)}</span><span class="t-sub">${esc(it.k)} · ${esc(it.m)}</span>
+        </button>
+        <button class="icon-btn learn" data-learn-today="${esc(it.id)}" aria-label="외웠어요">${I.check}</button>
+      </div>`).join('')}
+    </div>
+    <button class="btn" data-know-today>${today.length}개 다 알아요 · 다음 표현 보기</button>`
+    : `<div class="empty"><b style="color:var(--ink);font-size:16px">${S.level}단계 표현을 다 외웠어요</b>${nextLevelBtn() || '<span>단어장에서 체크를 풀면 다시 나와요.</span>'}</div>`}
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:10px">
+    <div class="sec-title"><h2>${S.level}단계 상황별로 보기</h2><span>추천 순서대로</span></div>
+    <div class="cats">${CATS.filter(c => c.lv === S.level).map(c => {
+      const p = pool(c.id), dn = p.filter(i => S.learned.has(i.id)).length;
+      return `<button class="cat-tile" data-go-cat="${c.id}">
+        <b>${esc(c.name)}</b><small>${esc(c.desc)}</small>
+        <span class="cnt">${dn} / ${p.length}</span>
+        <span class="mini"><i style="width:${Math.round(dn / p.length * 100)}%"></i></span>
+      </button>`;
+    }).join('')}</div>
+  </section>
+
+  <section class="tips">
+    <h2 style="font-size:15px;font-weight:600">듣기 전에 알아두면 좋은 것</h2>
+    <ul>
+      <li><b>말끝 よ는 존댓말이 아니에요.</b> 「おいしいよ」는 "맛있어"라고 알려주는 반말이에요.</li>
+      <li><b>실제 대화는 줄여 말해요.</b> 〜ている → 〜てる, すごい → すげー. 3단계 구어 축약에서 모아 볼 수 있어요.</li>
+      <li><b>정중체와 반말을 구분해 보세요.</b> 스태프에게는 〜です・〜ます, 멤버끼리는 반말. 영상 속 관계가 들려요.</li>
+      <li><b>스피커를 한 번 더 누르면 천천히 들려요.</b> 놓친 발음은 바로 다시 들어 보세요.</li>
+    </ul>
+  </section>`;
+}
+
+/* 화면: 단어장 */
+function viewList(){
+  const q = S.q.trim().toLowerCase();
+  const items = (q && S.cat === 'all' ? ITEMS : pool(S.cat)).filter(it => !q || [it.j, it.r, it.k, it.m, it.n, it.ej, it.ek].join(' ').toLowerCase().includes(q));
+  return `
+  <div class="toolbar">
+    <input class="search" id="search" type="search" placeholder="일본어·한국어로 찾기" value="${esc(S.q)}" autocomplete="off">
+    <button class="pill${S.hide ? ' on' : ''}" data-hide aria-pressed="${S.hide}">뜻 가리기</button>
+  </div>
+  ${chips()}
+  <div class="list${S.hide ? ' hide-mean' : ''}" id="list">
+    ${items.length ? items.map(cardHTML).join('') : `<div class="empty">${S.cat === 'fav' && !q ? '별 버튼을 눌러 헷갈리는 표현을 모아 두세요.' : '찾는 표현이 없어요. 다른 단어로 찾아보세요.'}</div>`}
+  </div>`;
+}
+
+/* 화면: 카드 */
+function startDeck(){
+  const p = pool(S.cat).filter(i => !S.learned.has(i.id));
+  S.deck = {queue: shuffle(p.map(i => i.id)), flipped: false, total: p.length, done: 0};
+}
+function viewCards(){
+  if (!S.deck) startDeck();
+  const D = S.deck;
+  const whole = S.cat === 'all';
+  const scope = whole ? `${S.level}단계 전체` : S.cat === 'fav' ? '즐겨찾기' : catName(S.cat);
+  if (S.skipAsk && D.queue.length) {
+    const moveOn = whole && S.level < LEVELS.length;
+    return `${chips()}
+    <div class="empty">
+      <b style="color:var(--ink);font-size:16px">남은 ${D.queue.length}장을 외움으로 표시할까요?</b>
+      <span>${moveOn ? `표시한 뒤 ${S.level + 1}단계 ${esc(LEVELS[S.level].name)}로 넘어가요.` : '표시한 뒤 이 묶음을 마쳐요.'} 나중에 단어장에서 체크를 풀 수 있어요.</span>
+      <div class="btn-row" style="width:100%"><button class="btn" data-skip-cancel>취소</button><button class="btn primary" data-skip-go>${moveOn ? '표시하고 넘어가기' : '표시하기'}</button></div>
+    </div>`;
+  }
+  if (!D.queue.length) {
+    const any = pool(S.cat).length;
+    const st = levelStats(S.level);
+    return `${chips()}
+    <div class="empty">
+      <b style="color:var(--ink);font-size:16px">${any ? `${esc(scope)} 카드를 다 외웠어요` : '이 묶음에 카드가 없어요'}</b>
+      <span>${any ? '다음 단계로 가거나, 처음부터 다시 볼 수 있어요.' : '단어장에서 별을 눌러 즐겨찾기를 채워 보세요.'}</span>
+      ${st.done === st.total ? nextLevelBtn() : any && !whole ? '<button class="btn primary" data-cat="all">이 단계 다른 카드 보기</button>' : ''}
+      ${any ? '<button class="btn small" data-reset-cat>이 묶음 처음부터 다시</button>' : ''}
+    </div>`;
+  }
+  const it = byId[D.queue[0]];
+  return `${chips()}
+  <div class="deck-meta"><span>${esc(scope)}</span><span>남은 카드 ${D.queue.length}장 · 오늘 ${D.done}개 외움</span></div>
+  <div class="flash" data-flip role="button" tabindex="0" aria-label="카드 뒤집기">
+    <span class="tag">${esc(catName(it.cat))}</span>
+    <button class="jp" data-say="${esc(sayOf(it))}" aria-label="발음 듣기"><span lang="ja">${esc(it.j)}</span>${I.speaker}</button>
+    ${D.flipped ? `${readLine(it)}<p class="mean">${esc(it.m)}</p>${it.n ? `<p class="note">${esc(it.n)}</p>` : ''}${exBlock(it)}` : '<p class="hint">뜻을 떠올려 보고, 탭해서 확인하세요</p>'}
+  </div>
+  <div class="btn-row">
+    <button class="btn" data-again>다시 볼래요</button>
+    <button class="btn good" data-got>외웠어요</button>
+  </div>
+  <button class="link-btn" data-skip-ask>${whole && S.level < LEVELS.length ? '이 단계는 다 알아요 · 다음 단계로' : '이 묶음은 다 알아요'}</button>`;
+}
+
+/* 화면: 퀴즈 */
+const MODES = {jp2ko:'일본어 → 뜻', listen:'듣고 뜻 고르기', ko2jp:'뜻 → 일본어'};
+function startQuiz(){
+  const p = pool(S.cat);
+  if (p.length < 4) { toast('퀴즈는 표현이 4개 이상 있어야 해요'); return false; }
+  const key = S.quizMode === 'ko2jp' ? 'j' : 'm';
+  const qs = shuffle(p).slice(0, 10).map(it => {
+    const src = shuffle(p.length >= 8 ? p : ITEMS);
+    const others = [];
+    for (const o of src) {
+      if (o.id === it.id || o[key] === it[key] || others.some(x => x[key] === o[key])) continue;
+      others.push(o); if (others.length === 3) break;
+    }
+    return {id: it.id, opts: shuffle([it, ...others]).map(o => o.id)};
+  });
+  S.quiz = {mode: S.quizMode, qs, i: 0, score: 0, picked: null, wrong: [], done: false};
+  return true;
+}
+function viewQuiz(){
+  const Q = S.quiz;
+  if (!Q) {
+    return `
+    <section style="display:flex;flex-direction:column;gap:10px">
+      <div class="sec-title"><h2>퀴즈 방식</h2><span>10문제</span></div>
+      <div class="seg">${Object.entries(MODES).map(([k, v]) => `<button class="${S.quizMode === k ? 'on' : ''}" data-mode="${k}">${v}</button>`).join('')}</div>
+      <p class="muted">${S.quizMode === 'listen' ? '글자 없이 소리만 듣고 고르는 모드예요. 자막 없이 듣는 연습에 제일 가까워요.' : S.quizMode === 'ko2jp' ? '한국어 뜻을 보고 맞는 일본어를 골라요.' : '일본어를 보고 맞는 뜻을 골라요.'}</p>
+    </section>
+    <section style="display:flex;flex-direction:column;gap:10px">
+      <div class="sec-title"><h2>범위</h2><span>${S.level}단계</span></div>
+      ${chips()}
+    </section>
+    <button class="btn primary" data-start>퀴즈 시작</button>`;
+  }
+  if (Q.done) {
+    const n = Q.qs.length;
+    return `
+    <section class="q-card">
+      <span class="eyebrow">${esc(MODES[Q.mode])}</span>
+      <div class="score">${Q.score}<span style="font-size:20px;color:var(--muted)"> / ${n}</span></div>
+      <p class="muted">${Q.score === n ? '완벽해요!' : Q.score >= Math.ceil(n * 0.8) && S.level < LEVELS.length ? '이 단계는 충분히 들려요. 다음 단계에 도전해 보세요.' : Q.score >= n * 0.7 ? '거의 다 들려요.' : '틀린 표현을 단어장에서 한 번 더 보세요.'}</p>
+    </section>
+    ${Q.wrong.length ? `<div class="sec-title"><h2>틀린 표현</h2><button class="pill" data-fav-wrong>모두 즐겨찾기</button></div>
+    <div class="list">${Q.wrong.map(id => cardHTML(byId[id])).join('')}</div>` : ''}
+    ${Q.score >= Math.ceil(n * 0.8) && S.level < LEVELS.length && S.cat !== 'fav' ? `<button class="btn primary" data-level-quiz="${S.level + 1}">${S.level + 1}단계 퀴즈 도전</button>` : ''}
+    <div class="btn-row"><button class="btn" data-quiz-home>방식 바꾸기</button><button class="btn primary" data-start>다시 풀기</button></div>`;
+  }
+  const q = Q.qs[Q.i], it = byId[q.id], answered = Q.picked !== null;
+  const prompt = Q.mode === 'listen'
+    ? `<button class="listen-btn" data-say="${esc(sayOf(it))}" aria-label="다시 듣기">${I.speaker}</button><p class="muted">눌러서 다시 듣기 · 한 번 더 누르면 천천히</p>`
+    : Q.mode === 'ko2jp'
+      ? `<p class="q-ko">${esc(it.m)}</p>`
+      : `<button class="jp" data-say="${esc(sayOf(it))}"><span lang="ja">${esc(it.j)}</span>${I.speaker}</button>`;
+  return `
+  <div class="deck-meta"><span>${esc(MODES[Q.mode])}</span><span>${Q.i + 1} / ${Q.qs.length} · 맞힌 개수 ${Q.score}</span></div>
+  <section class="q-card">${prompt}</section>
+  <div class="opts">${q.opts.map((oid, idx) => {
+    const o = byId[oid];
+    let cls = 'opt' + (Q.mode === 'ko2jp' ? ' jp-opt' : '');
+    if (answered && oid === q.id) cls += ' right';
+    else if (answered && idx === Q.picked) cls += ' wrong';
+    return `<button class="${cls}" data-ans="${idx}" ${answered ? 'disabled' : ''}${Q.mode === 'ko2jp' ? ' lang="ja"' : ''}>${esc(Q.mode === 'ko2jp' ? o.j : o.m)}</button>`;
+  }).join('')}</div>
+  ${answered ? `<div class="feedback">
+    <button class="fb-jp" data-say="${esc(sayOf(it))}" style="text-align:left">${esc(it.j)}</button>
+    ${readLine(it)}<p class="mean">${esc(it.m)}</p>${exBlock(it)}
+  </div>
+  <button class="btn primary" data-next>${Q.i + 1 < Q.qs.length ? '다음 문제' : '결과 보기'}</button>` : ''}`;
+}
+
+/* 렌더 */
+const TABS = [['home', '홈', I.home], ['list', '단어장', I.book], ['cards', '카드', I.cards], ['quiz', '퀴즈', I.quiz]];
+function render(){
+  const v = document.getElementById('view');
+  v.innerHTML = S.view === 'list' ? viewList() : S.view === 'cards' ? viewCards() : S.view === 'quiz' ? viewQuiz() : viewHome();
+  document.getElementById('tabs').innerHTML = TABS.map(([id, label, ic]) => `<button class="tab${S.view === id ? ' on' : ''}" data-nav="${id}" aria-current="${S.view === id ? 'page' : 'false'}">${ic}<span>${label}</span></button>`).join('');
+  document.getElementById('levelLabel').textContent = `${S.level}단계 · ${LEVELS[S.level - 1].name}`;
+  const sb = document.getElementById('slowBtn');
+  sb.innerHTML = I.speaker + (S.slow ? '천천히' : '보통 속도');
+  sb.classList.toggle('on', S.slow);
+  sb.setAttribute('aria-pressed', S.slow);
+  const on = v.querySelector('.chip.on');
+  if (on) { const c = on.parentElement; c.scrollLeft = on.offsetLeft - c.offsetLeft - (c.clientWidth - on.offsetWidth) / 2; }
+  persist();
+}
+function go(view){ S.view = view; render(); window.scrollTo(0, 0); }
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('button,[data-flip],[data-reveal]');
+  if (!t) return;
+  const list = t.closest('.hide-mean');
+  const card = t.closest('.card');
+  if (list && card && !card.classList.contains('reveal') && t.closest('[data-reveal]')) { card.classList.add('reveal'); return; }
+  const ds = t.dataset;
+  if (ds.say !== undefined) { speak(ds.say); return; }
+  if (ds.nav) { go(ds.nav); return; }
+  if (ds.slow !== undefined) { S.slow = !S.slow; render(); toast(S.slow ? '음성을 천천히 읽어요' : '음성을 보통 속도로 읽어요'); return; }
+  if (ds.cat) { S.cat = ds.cat; S.deck = null; S.skipAsk = false; render(); return; }
+  if (ds.goCat) { S.level = CATS.find(c => c.id === ds.goCat).lv; S.cat = ds.goCat; S.deck = null; go('list'); return; }
+  if (ds.level) { const n = +ds.level; if (n !== S.level) setLevel(n); render(); if (S.view === 'home') window.scrollTo(0, 0); return; }
+  if (ds.learnToday) { S.learned.add(ds.learnToday); render(); return; }
+  if (ds.knowToday !== undefined) { todayPicks().forEach(i => S.learned.add(i.id)); render(); toast('다음 표현을 가져왔어요'); return; }
+  if (ds.skipAsk !== undefined) { S.skipAsk = true; render(); return; }
+  if (ds.skipCancel !== undefined) { S.skipAsk = false; render(); return; }
+  if (ds.skipGo !== undefined) {
+    const moveOn = S.cat === 'all' && S.level < LEVELS.length;
+    S.deck.queue.forEach(id => S.learned.add(id));
+    S.skipAsk = false; S.deck = null;
+    if (moveOn) setLevel(S.level + 1);
+    render(); window.scrollTo(0, 0); return;
+  }
+  if (ds.levelQuiz) { setLevel(+ds.levelQuiz); if (startQuiz()) { render(); window.scrollTo(0, 0); if (S.quiz.mode === 'listen') speak(sayOf(byId[S.quiz.qs[0].id])); } return; }
+  if (ds.hide !== undefined) { S.hide = !S.hide; render(); return; }
+  if (ds.fav) { S.fav.has(ds.fav) ? S.fav.delete(ds.fav) : S.fav.add(ds.fav); updateCardButtons(t, S.fav.has(ds.fav)); persist(); return; }
+  if (ds.learn) { S.learned.has(ds.learn) ? S.learned.delete(ds.learn) : S.learned.add(ds.learn); const on = S.learned.has(ds.learn); updateCardButtons(t, on); t.closest('.card')?.classList.toggle('done', on); persist(); return; }
+  if (ds.flip !== undefined) { S.deck.flipped = !S.deck.flipped; render(); return; }
+  if (ds.again !== undefined) { const D = S.deck; const id = D.queue.shift(); D.queue.splice(Math.min(3, D.queue.length), 0, id); D.flipped = false; render(); return; }
+  if (ds.got !== undefined) { const D = S.deck; S.learned.add(D.queue.shift()); D.done++; D.flipped = false; render(); return; }
+  if (ds.resetCat !== undefined) { pool(S.cat).forEach(i => S.learned.delete(i.id)); S.deck = null; render(); toast('처음부터 다시 시작해요'); return; }
+  if (ds.mode) { S.quizMode = ds.mode; render(); return; }
+  if (ds.start !== undefined) { if (startQuiz()) { render(); window.scrollTo(0, 0); if (S.quiz.mode === 'listen') speak(sayOf(byId[S.quiz.qs[0].id])); } return; }
+  if (ds.ans !== undefined) {
+    const Q = S.quiz, q = Q.qs[Q.i], idx = +ds.ans;
+    Q.picked = idx;
+    if (q.opts[idx] === q.id) Q.score++; else Q.wrong.push(q.id);
+    render(); speak(sayOf(byId[q.id])); return;
+  }
+  if (ds.next !== undefined) {
+    const Q = S.quiz;
+    Q.picked = null;
+    if (Q.i + 1 < Q.qs.length) { Q.i++; render(); if (Q.mode === 'listen') speak(sayOf(byId[Q.qs[Q.i].id])); }
+    else { Q.done = true; render(); }
+    window.scrollTo(0, 0); return;
+  }
+  if (ds.quizHome !== undefined) { S.quiz = null; render(); return; }
+  if (ds.favWrong !== undefined) { S.quiz.wrong.forEach(id => S.fav.add(id)); render(); toast('즐겨찾기에 담았어요'); return; }
+});
+function updateCardButtons(btn, on){ btn.classList.toggle('on', on); btn.setAttribute('aria-pressed', on); }
+
+// 칩 줄: 세로 휠을 가로 스크롤로, 마우스로 끌어서 넘기기
+document.addEventListener('wheel', e => {
+  const c = e.target.closest('.chips');
+  if (!c || c.scrollWidth <= c.clientWidth || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+  e.preventDefault();
+  c.scrollLeft += e.deltaY;
+}, {passive: false});
+let drag = null;
+document.addEventListener('pointerdown', e => {
+  const c = e.target.closest('.chips');
+  if (!c || e.pointerType !== 'mouse' || e.button !== 0) return;
+  drag = {c, x: e.clientX, left: c.scrollLeft, moved: false};
+});
+document.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const dx = e.clientX - drag.x;
+  if (!drag.moved && Math.abs(dx) > 5) { drag.moved = true; drag.c.classList.add('dragging'); }
+  if (drag.moved) drag.c.scrollLeft = drag.left - dx;
+});
+document.addEventListener('pointerup', () => {
+  if (!drag) return;
+  const d = drag; drag = null;
+  if (d.moved) {
+    // 끌기가 끝난 직후의 클릭은 칩 선택으로 치지 않음
+    const stop = ev => { ev.stopPropagation(); ev.preventDefault(); };
+    document.addEventListener('click', stop, {capture: true, once: true});
+    setTimeout(() => { document.removeEventListener('click', stop, {capture: true}); d.c.classList.remove('dragging'); }, 0);
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[data-flip]')) { e.preventDefault(); S.deck.flipped = !S.deck.flipped; render(); }
+});
+document.addEventListener('input', e => {
+  if (e.target.id !== 'search') return;
+  S.q = e.target.value;
+  // 입력창은 그대로 두고 목록만 다시 그려서 한글 조합이 끊기지 않게
+  const tmp = document.createElement('div');
+  tmp.innerHTML = viewList();
+  document.getElementById('list').replaceWith(tmp.querySelector('#list'));
+});
+
+render();
+</script>
+</body>
+</html>
